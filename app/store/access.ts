@@ -1,59 +1,31 @@
 import {
-  ApiPath,
   DEFAULT_API_HOST,
   GoogleSafetySettingsThreshold,
   ServiceProvider,
   StoreKey,
 } from "../constant";
-import { getHeaders } from "../client/api";
-import { getClientConfig } from "../config/client";
 import { createPersistStore } from "../utils/store";
 import { ensure } from "../utils/clone";
-import { DEFAULT_CONFIG } from "./config";
 
-let fetchState = 0; // 0 not fetch, 1 fetching, 2 done
+const DEFAULT_OPENAI_URL = DEFAULT_API_HOST + "/api/proxy/openai";
 
-const isApp = getClientConfig()?.buildMode === "export";
+const DEFAULT_GOOGLE_URL = DEFAULT_API_HOST + "/api/proxy/google";
 
-const DEFAULT_OPENAI_URL = isApp
-  ? DEFAULT_API_HOST + "/api/proxy/openai"
-  : ApiPath.OpenAI;
+const DEFAULT_ANTHROPIC_URL = DEFAULT_API_HOST + "/api/proxy/anthropic";
 
-const DEFAULT_GOOGLE_URL = isApp
-  ? DEFAULT_API_HOST + "/api/proxy/google"
-  : ApiPath.Google;
+const DEFAULT_BAIDU_URL = DEFAULT_API_HOST + "/api/proxy/baidu";
 
-const DEFAULT_ANTHROPIC_URL = isApp
-  ? DEFAULT_API_HOST + "/api/proxy/anthropic"
-  : ApiPath.Anthropic;
+const DEFAULT_BYTEDANCE_URL = DEFAULT_API_HOST + "/api/proxy/bytedance";
 
-const DEFAULT_BAIDU_URL = isApp
-  ? DEFAULT_API_HOST + "/api/proxy/baidu"
-  : ApiPath.Baidu;
+const DEFAULT_ALIBABA_URL = DEFAULT_API_HOST + "/api/proxy/alibaba";
 
-const DEFAULT_BYTEDANCE_URL = isApp
-  ? DEFAULT_API_HOST + "/api/proxy/bytedance"
-  : ApiPath.ByteDance;
+const DEFAULT_TENCENT_URL = DEFAULT_API_HOST + "/api/proxy/tencent";
 
-const DEFAULT_ALIBABA_URL = isApp
-  ? DEFAULT_API_HOST + "/api/proxy/alibaba"
-  : ApiPath.Alibaba;
+const DEFAULT_MOONSHOT_URL = DEFAULT_API_HOST + "/api/proxy/moonshot";
 
-const DEFAULT_TENCENT_URL = isApp
-  ? DEFAULT_API_HOST + "/api/proxy/tencent"
-  : ApiPath.Tencent;
+const DEFAULT_STABILITY_URL = DEFAULT_API_HOST + "/api/proxy/stability";
 
-const DEFAULT_MOONSHOT_URL = isApp
-  ? DEFAULT_API_HOST + "/api/proxy/moonshot"
-  : ApiPath.Moonshot;
-
-const DEFAULT_STABILITY_URL = isApp
-  ? DEFAULT_API_HOST + "/api/proxy/stability"
-  : ApiPath.Stability;
-
-const DEFAULT_IFLYTEK_URL = isApp
-  ? DEFAULT_API_HOST + "/api/proxy/iflytek"
-  : ApiPath.Iflytek;
+const DEFAULT_IFLYTEK_URL = DEFAULT_API_HOST + "/api/proxy/iflytek";
 
 const DEFAULT_ACCESS_STATE = {
   accessCode: "",
@@ -127,8 +99,6 @@ export const useAccessStore = createPersistStore(
 
   (set, get) => ({
     enabledAccessControl() {
-      this.fetch();
-
       return get().needCode;
     },
 
@@ -172,8 +142,6 @@ export const useAccessStore = createPersistStore(
     },
 
     isAuthorized() {
-      this.fetch();
-
       // has token or has code or disabled access control
       return (
         this.isValidOpenAI() ||
@@ -189,35 +157,6 @@ export const useAccessStore = createPersistStore(
         !this.enabledAccessControl() ||
         (this.enabledAccessControl() && ensure(get(), ["accessCode"]))
       );
-    },
-    fetch() {
-      if (fetchState > 0 || getClientConfig()?.buildMode === "export") return;
-      fetchState = 1;
-      fetch("/api/config", {
-        method: "post",
-        body: null,
-        headers: {
-          ...getHeaders(),
-        },
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          // Set default model from env request
-          let defaultModel = res.defaultModel ?? "";
-          DEFAULT_CONFIG.modelConfig.model =
-            defaultModel !== "" ? defaultModel : "gpt-3.5-turbo";
-          return res;
-        })
-        .then((res: DangerConfig) => {
-          console.log("[Config] got config from server", res);
-          set(() => ({ ...res }));
-        })
-        .catch(() => {
-          console.error("[Config] failed to fetch config");
-        })
-        .finally(() => {
-          fetchState = 2;
-        });
     },
   }),
   {

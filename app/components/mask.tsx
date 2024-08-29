@@ -46,8 +46,7 @@ import {
 } from "../utils";
 import { Updater } from "../typing";
 import { ModelConfigList } from "./model-config";
-import { FileName, Path } from "../constant";
-import { BUILTIN_MASK_STORE } from "../masks";
+import { Path } from "../constant";
 import { nanoid } from "nanoid";
 import {
   DragDropContext,
@@ -443,13 +442,8 @@ export function MaskPage() {
   };
 
   const [editingMaskId, setEditingMaskId] = useState<string | undefined>();
-  const editingMask =
-    maskStore.get(editingMaskId) ?? BUILTIN_MASK_STORE.get(editingMaskId);
+  const editingMask = maskStore.get(editingMaskId);
   const closeMaskModal = () => setEditingMaskId(undefined);
-
-  const downloadAll = () => {
-    downloadAs(JSON.stringify(masks.filter((v) => !v.builtin)), FileName.Masks);
-  };
 
   const importFromFile = () => {
     readFromFile().then((content) => {
@@ -489,7 +483,7 @@ export function MaskPage() {
               <IconButton
                 icon={<DownloadIcon />}
                 bordered
-                onClick={downloadAll}
+                onClick={() => {}}
                 text={Locale.UI.Export}
               />
             </div>

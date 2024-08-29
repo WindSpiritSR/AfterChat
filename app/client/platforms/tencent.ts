@@ -1,5 +1,5 @@
 "use client";
-import { ApiPath, DEFAULT_API_HOST, REQUEST_TIMEOUT_MS } from "@/app/constant";
+import { DEFAULT_API_HOST, REQUEST_TIMEOUT_MS } from "@/app/constant";
 import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
 
 import {
@@ -15,7 +15,6 @@ import {
   fetchEventSource,
 } from "@fortaine/fetch-event-source";
 import { prettyObject } from "@/app/utils/format";
-import { getClientConfig } from "@/app/config/client";
 import { getMessageTextContent, isVisionModel } from "@/app/utils";
 import mapKeys from "lodash-es/mapKeys";
 import mapValues from "lodash-es/mapValues";
@@ -68,16 +67,13 @@ export class HunyuanApi implements LLMApi {
     }
 
     if (baseUrl.length === 0) {
-      const isApp = !!getClientConfig()?.isApp;
-      baseUrl = isApp
-        ? DEFAULT_API_HOST + "/api/proxy/tencent"
-        : ApiPath.Tencent;
+      baseUrl = DEFAULT_API_HOST + "/api/proxy/tencent";
     }
 
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.slice(0, baseUrl.length - 1);
     }
-    if (!baseUrl.startsWith("http") && !baseUrl.startsWith(ApiPath.Tencent)) {
+    if (!baseUrl.startsWith("http") && !baseUrl.startsWith("/api/tencent")) {
       baseUrl = "https://" + baseUrl;
     }
 

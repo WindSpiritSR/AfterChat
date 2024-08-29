@@ -9,10 +9,6 @@ body:
       multiple: true
       options:
         - 'Official installation package'
-        - 'Vercel'
-        - 'Zeabur'
-        - 'Sealos'
-        - 'Netlify'
         - 'Docker'
         - 'Other'
     validations:
@@ -22,7 +18,7 @@ body:
       label: '📌 Version'
     validations:
       required: true
-  
+
   - type: dropdown
     attributes:
       label: '💻 Operating System'
@@ -30,7 +26,7 @@ body:
       options:
         - 'Windows'
         - 'macOS'
-        - 'Ubuntu'
+        - 'Debian'
         - 'Other Linux'
         - 'iOS'
         - 'iPad OS'

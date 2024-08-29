@@ -1,4 +1,4 @@
-import { ACCESS_CODE_PREFIX, Anthropic, ApiPath } from "@/app/constant";
+import { Anthropic } from "@/app/constant";
 import { ChatOptions, getHeaders, LLMApi, MultimodalContent } from "../api";
 import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
 import { getClientConfig } from "@/app/config/client";
@@ -368,11 +368,7 @@ export class ClaudeApi implements LLMApi {
 
     // if endpoint is empty, use default endpoint
     if (baseUrl.trim().length === 0) {
-      const isApp = !!getClientConfig()?.isApp;
-
-      baseUrl = isApp
-        ? DEFAULT_API_HOST + "/api/proxy/anthropic"
-        : ApiPath.Anthropic;
+      baseUrl = DEFAULT_API_HOST + "/api/proxy/anthropic";
     }
 
     if (!baseUrl.startsWith("http") && !baseUrl.startsWith("/api")) {
